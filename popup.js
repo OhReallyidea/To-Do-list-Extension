@@ -36,7 +36,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const todo = {
       id: Date.now(),
       text: text,
-      completed: false
+      completed: false,
+      createdAt: new Date().toISOString()
     };
 
     todos.push(todo);
@@ -61,10 +62,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function clearCompleted() {
     const hasCompleted = todos.some(todo => todo.completed);
-    if (!hasCompleted) return;
-    todos = todos.filter(todo => !todo.completed);
-    saveTodos();
-    renderTodos();
+    if (!hasCompleted) {
+      const clearBtn = document.getElementById('clearCompletedBtn');
+      clearBtn.textContent = 'No completed tasks!';
+      setTimeout(() => {
+        clearBtn.textContent = 'Clear Done';
+      }, 2000);
+      return;
+    }
+    
+    if (confirm('Delete all completed tasks?')) {
+      todos = todos.filter(todo => !todo.completed);
+      saveTodos();
+      renderTodos();
+    }
   }
 
   function renderTodos() {
@@ -95,6 +106,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <div class="todo-content">
           <input type="checkbox" class="todo-checkbox" ${todo.completed ? 'checked' : ''} />
           <span class="todo-text">${escapeHtml(todo.text)}</span>
+          ${todo.completed ? '<span class="completed-badge">✓ Done</span>' : ''}
         </div>
         <button class="delete-btn" title="Delete task">✕</button>
       </li>
